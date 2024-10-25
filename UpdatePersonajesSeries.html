@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <script src="/js/color-modes.js"></script> -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.122.0">
+    <!-- se cambia la ruta -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- guardamos el estilo -->
+    <link rel="stylesheet" href="css/custom-style.css">
+
+
+    <!-- Custom styles for this template -->
+    <link href="css/navbar-f  ixed.css" rel="stylesheet">
+    <title>Document</title>
+    <style>
+        img {
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="HomeSeries.html">Series / personajes</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="HomeSeries.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="CreatePersonaje.html">Nuevo Personaje</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="UpdatePersonajesSeries.html">modificar Personaje</a>
+                        </li>
+                        <li class="nav-item dropdown ">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
+                                aria-expanded="false">Series</a>
+                            <ul class="dropdown-menu" id="selectSeries">
+                                <!-- <li class="dropdown-item">hola</li> -->
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <main class="container">
+        <div class="bg-body-tertiary p-5 rounded">
+            <h1>Personajes y Series</h1>
+            <label>Seleccione una serie</label>
+            <select id="serieSeleccionada" class="form-control"></select>
+            <br />
+            <label>Seleccione un personaje</label>
+            <select id="personajeSeleccionado" class="form-control"></select>
+            <br />
+
+            <button id="botonactualizar" class="btn btn-success">Actualizar</button>
+
+        </div>
+
+
+        <script src="js/jquery-3.7.1.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script>
+
+            urlSeries = "https://apiseriespersonajes2024.azurewebsites.net/";
+            urlPersonajes = "https://apiseriespersonajes2024.azurewebsites.net/";
+           
+
+            $(document).ready(function () {
+                // loadListaNavbar();
+                loadSeries();
+                loadPersonajes();
+
+                $("#botonactualizar").click(function () {
+
+                    var serieSeleccionada = parseInt($("#serieSeleccionada option:selected").attr("data-id"));
+                    var personajeSeleccionado = parseInt($("#personajeSeleccionado option:selected").attr("data-id"));
+
+                    console.log(serieSeleccionada);
+                    console.log(personajeSeleccionado);
+
+                    var request = "api/personajes/" + personajeSeleccionado + "/" + serieSeleccionada;
+
+                    console.log(request);
+                    $.ajax({
+                        url: urlPersonajes + request,
+                        type: "PUT",
+                        contentType: "application/json",
+                        success: function () {
+                            console.log("personaje cambiado");
+                            window.location.href =
+                                "HomeSeries.html";
+                        }
+                    })
+
+                })
+
+            });
+            
+            
+
+            function loadListaNavbar() {
+                request = "api/Series";
+                $.ajax({
+                    url: urlSeries + request,
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (data) {
+                        var html = "";
+                        $.each(data, function (index, serie) {
+
+                            html += "<li class='dropdown-item' onclick='detalleSerie(" + serie.idSerie + " )' id='serieSeleccionada'>" + serie.nombre + "</li>";
+
+                        });
+                        $("#selectSeries").html(html);
+                        var html = "";
+
+
+                    }
+                })
+            }
+
+
+            function loadSeries() {
+                request = "api/Series";
+                $.ajax({
+                    url: urlSeries + request,
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (data) {
+
+                        var html = "";
+                        $.each(data, function (index, serie) {
+
+                            html += "<option data-id='" + serie.idSerie + "'' class='dropdown-item'>" + serie.nombre + "</option>";
+
+                        });
+                        $("#serieSeleccionada").html(html);
+                        var html = "";
+
+
+                    }
+                })
+            }
+
+            function loadPersonajes() {
+                request = "api/Personajes";
+                $.ajax({
+                    url: urlPersonajes + request,
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (data) {
+                        var html = "";
+                        $.each(data, function (index, personaje) {
+
+                            html += "<option data-id='" + personaje.idPersonaje + "'' class='dropdown-item'>" + personaje.nombre + "</option>";
+
+                        });
+                        $("#personajeSeleccionado").html(html);
+                        var html = "";
+
+                    }
+                })
+            }
+
+           
+
+
+            function detalleSerie(id) {
+
+                window.location.href = "DetalleSerie.html?idserie=" + id;
+            }
+
+        </script>
+</body>
+
+</html>
